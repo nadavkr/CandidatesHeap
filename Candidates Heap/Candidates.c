@@ -4,7 +4,7 @@
 #include<time.h>
 
 #define Max_File_Size 100000
-#define K_Largest 30000
+#define K_Largest 10
 
 //build a max heap for the input array (in-place)
 void makeHeap(int inputArray[], int inputSize);
@@ -19,7 +19,20 @@ void insert(int heap[], int currentHeapSize, int element);
 
 int extractMax(int heap[], int currentHeapSize);
 
-void printHeap(int arr[], int arrSize);
+//this struct contains an element in the candidates' heap, and its index in the large heap
+struct ElementIndexPair
+{
+	int element;
+	int index;
+};
+
+void siftCandidateDown(struct ElementIndexPair candidatesHeap[], int candidatesHeapSize, int indexInCandidateHeap);
+
+void siftCandidateUp(struct ElementIndexPair candidatesHeap[], int candidatesHeapSize, int indexInCandidateHeap);
+
+void insertToCandidateHeap(struct ElementIndexPair candidateHeap[], int currentHeapSize, struct ElementIndexPair element);
+
+int candidateHeapExtractMax(struct ElementIndexPair candidateHeap[], int currentHeapSize);
 
 void writeOutput(int arr[], int arrSize);
 
@@ -143,7 +156,6 @@ void insert(int heap[], int currentHeapSize, int element)
 {
 	//insert the new element as the last leaf
 	heap[currentHeapSize] = element;
-	printHeap(heap, currentHeapSize + 1);
 	siftUp(heap, currentHeapSize + 1, currentHeapSize);
 }
 
@@ -155,13 +167,6 @@ int extractMax(int heap[], int currentHeapSize)
 	siftDown(heap, currentHeapSize - 1, 0);
 	return max;
 }
-
-//this struct contains an element in the candidates' heap, and its index in the large heap
-struct ElementIndexPair
-{
-	int element;
-	int index;
-};
 
 //sift a candidate down in the candidates heap
 void siftCandidateDown(struct ElementIndexPair candidatesHeap[], int candidatesHeapSize, int indexInCandidateHeap)
@@ -260,22 +265,4 @@ int* returnKLargest(int inputArray[], int inputSize, int k, int *kLargestElement
 
 	free(candidatesHeap);
 	return kLargestElements;
-}
-
-void printHeap(int heap[], int heapsize)
-{
-	int newLevel = 0;
-	int levelsLeft = (int)ceil(heapsize / 2);
-	for (int i = 0; i < heapsize; i++)
-	{
-		if (i == newLevel)
-		{
-			printf("\n");
-			for (int j = 0; j < levelsLeft; j++)
-				printf(" ");
-			newLevel = newLevel * 2 + 1;
-			levelsLeft--;
-		}
-		printf(" %2d ", heap[i]);
-	}
 }
